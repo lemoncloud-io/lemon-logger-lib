@@ -90,18 +90,20 @@ export class LemonLog implements LogInterface {
     }
 
     private getFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
-        const defaultColor = this.colorService.getColorAsType();
-        const typeColor = this.colorService.getColorAsType(type);
 
         if (isNode) {
-            return this.getNodeFormat(defaultColor, typeColor);
+            return this.getNodeFormat(type);
         }
         // isBrowser
-        return this.getBrowserFormat(defaultColor, typeColor);
+        return this.getBrowserFormat(type);
     }
 
-    private getNodeFormat(defaultColor: string, typeColor: string): FormatInterface {
-        const timestampFormat = '\u001b[3' + defaultColor + 'm';
+    private getNodeFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
+        const defaultColor = this.colorService.getColorAsType();
+        const typeColor = this.colorService.getColorAsType(type);
+        const greyColor = this.colorService.getColorByName('Grey');
+
+        const timestampFormat = '\u001b[3' + greyColor + 'm';
         const typeFormat = '\u001b[3' + typeColor + ';22m';
         const textFormat = '\u001b[0m: ';
         const namespaceFormat = '\u001b[3' + defaultColor + ';1m';
@@ -109,8 +111,12 @@ export class LemonLog implements LogInterface {
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
-    private getBrowserFormat(defaultColor: string, typeColor: string): FormatInterface {
-        const timestampFormat = 'color:' + defaultColor;
+    private getBrowserFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
+        const defaultColor = this.colorService.getColorAsType();
+        const typeColor = this.colorService.getColorAsType(type);
+        const greyColor = this.colorService.getColorByName('Grey');
+
+        const timestampFormat = 'color:' + greyColor;
         const typeFormat = 'color:' + typeColor;
         const textFormat = ': ';
         const namespaceFormat = 'color:' + defaultColor + '; font-weight: bold';

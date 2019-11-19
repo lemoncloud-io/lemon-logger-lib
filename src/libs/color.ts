@@ -5,6 +5,10 @@ export const NODE_COLORS = {
     Red: 1,
     Green: 2,
     Yellow: 3,
+    Blue: 4,
+    Magenta: 5,
+    Cyan: 6,
+    Grey: 7,
 };
 
 export const BROWSER_COLORS = {
@@ -12,6 +16,10 @@ export const BROWSER_COLORS = {
     Red: 'IndianRed',
     Green: 'LimeGreen',
     Yellow: 'Orange',
+    Blue: 'RoyalBlue',
+    Magenta: 'Orchid',
+    Cyan: 'SkyBlue',
+    Grey: 'DimGrey',
 };
 
 export class ColorService {
@@ -31,6 +39,10 @@ export class ColorService {
 
     public getColorAsType(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR' | 'DEFAULT' = 'DEFAULT'): string {
         return this.logColors[type];
+    }
+
+    public getColorByName(name: string = 'Grey') {
+        return this.colorSet[name];
     }
 
     private getColorSet() {
