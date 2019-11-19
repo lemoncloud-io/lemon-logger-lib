@@ -1,5 +1,5 @@
 {
-    "name": "lemon-logger",
+    "name": "lemon-logger-lib",
     "version": "1.0.0",
     "description": "lemon logger library",
     "main": "dist/index.js",
@@ -21,7 +21,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+ssh://git@github.com/lemoncloud-io/lemon-logger.git"
+        "url": "git+ssh://git@github.com/lemoncloud-io/lemon-logger-lib.git"
     },
     "husky": {
         "hooks": {
@@ -43,9 +43,9 @@
     "author": "Louis",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/lemoncloud-io/lemon-logger/issues"
+        "url": "https://github.com/lemoncloud-io/lemon-logger-lib/issues"
     },
-    "homepage": "https://github.com/lemoncloud-io/lemon-logger#readme",
+    "homepage": "https://github.com/lemoncloud-io/lemon-logger-lib#readme",
     "dependencies": {
         "dotenv": "^8.0.0",
         "morgan": "^1.9.1",
