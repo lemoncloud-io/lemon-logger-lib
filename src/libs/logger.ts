@@ -35,7 +35,8 @@ export class LemonLog implements LogInterface {
     }
 
     public log(message: string, ...extraParams: any[]) {
-        this.debug(message, extraParams);
+        const formattedMessage = format(message, ...extraParams);
+        this.writeLog('DEBUG', formattedMessage);
     }
 
     public debug(message: string, ...extraParams: any[]) {
@@ -72,6 +73,18 @@ export class LemonLog implements LogInterface {
             } else {
                 console.log(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
             }
+        }
+
+        if (this.options.shouldSave) {
+            const defaultFormat: FormatInterface = {
+                timestampFormat: '',
+                typeFormat: '',
+                namespaceFormat: '',
+                textFormat: ': '
+            };
+            const unformattedText = this.createLogMessage(type, message, defaultFormat);
+            // TODO: add request
+            console.log(unformattedText)
         }
         return;
     }
