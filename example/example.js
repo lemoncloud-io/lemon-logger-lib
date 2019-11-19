@@ -1,5 +1,7 @@
 'use strict';
 
-const { sum } = require('../dist');
+const { LemonLog } = require('../dist');
+const logger = new LemonLog('TEasdasasdT', {});
 
-console.log(sum([1,2, 3,4,5]));
+logger.info('test erea', {abced: 'asdas'});
+logger.error('test', 123123,12312312312,312321);

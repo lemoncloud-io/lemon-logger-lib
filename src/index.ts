@@ -1,3 +1,3 @@
 // export Libraries
-export * from './libs/sayHello';
-export * from './libs/sum';
+export * from './libs/logger';
+export * from './libs/detectPlatform';

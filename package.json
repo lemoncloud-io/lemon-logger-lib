@@ -19,16 +19,19 @@
         "prepare": "npm run build",
         "prepublishOnly": "npm test && npm run lint && npm run format"
     },
+    "browser": {
+        "fs": false
+    },
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/lemoncloud-io/lemon-logger-lib.git"
     },
-    "husky": {
+    "!husky": {
         "hooks": {
             "pre-commit": "lint-staged"
         }
     },
-    "lint-staged": {
+    "!lint-staged": {
         "src/**/*.{js,ts,tsx,jsx}": [
             "npm run lint",
             "git add"
@@ -58,6 +61,7 @@
         "@types/dotenv": "^6.1.1",
         "@types/jest": "^24.0.12",
         "@types/morgan": "^1.7.35",
+        "@types/node": "^12.12.9",
         "@types/supertest": "^2.0.7",
         "@types/winston": "^2.4.4",
         "@typescript-eslint/eslint-plugin": "^1.7.0",
