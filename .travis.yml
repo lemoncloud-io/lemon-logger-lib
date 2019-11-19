@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+    - 8.10.0
+install:
+    - npm install
+script:
+    - npm run test
+env:
+    - CODECOV_TOKEN="72120e19-2b6e-47cd-86f3-7a9bfd8d0fb5"
+after_success:
+    - ./node_modules/.bin/codecov
