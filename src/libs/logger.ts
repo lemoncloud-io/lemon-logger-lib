@@ -4,6 +4,13 @@ import { EventEmitter } from 'events';
 import { isNode, isBrowser } from './detectPlatform';
 import { ColorService } from './color';
 
+export enum LogType {
+    DEBUG = 'DEBUG',
+    WARN = 'WARN',
+    INFO = 'INFO',
+    ERROR = 'ERROR',
+}
+
 export interface LogInterface {
     debug(message: string, ...extraParams: any[]): void;
     warn(message: string, ...extraParams: any[]): void;
@@ -24,6 +31,7 @@ export class LemonLog implements LogInterface {
     private namespace: string;
     private options = {
         shouldSave: true,
+        endpoint: ''
         // TODO: add more options
     };
 
@@ -36,30 +44,30 @@ export class LemonLog implements LogInterface {
 
     public log(message: string, ...extraParams: any[]) {
         const formattedMessage = format(message, ...extraParams);
-        this.writeLog('DEBUG', formattedMessage);
+        this.writeLog(LogType.DEBUG, formattedMessage);
     }
 
     public debug(message: string, ...extraParams: any[]) {
         const formattedMessage = format(message, ...extraParams);
-        this.writeLog('DEBUG', formattedMessage);
+        this.writeLog(LogType.DEBUG, formattedMessage);
     }
 
     public warn(message: string, ...extraParams: any[]) {
         const formattedMessage = format(message, ...extraParams);
-        this.writeLog('WARN', formattedMessage);
+        this.writeLog(LogType.WARN, formattedMessage);
     }
 
     public info(message: string, ...extraParams: any[]) {
         const formattedMessage = format(message, ...extraParams);
-        this.writeLog('INFO', formattedMessage);
+        this.writeLog(LogType.INFO, formattedMessage);
     }
 
     public error(message: string, ...extraParams: any[]) {
         const formattedMessage = format(message, ...extraParams);
-        this.writeLog('ERROR', formattedMessage);
+        this.writeLog(LogType.ERROR, formattedMessage);
     }
 
-    private writeLog(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR', message: string) {
+    private writeLog(type: LogType, message: string) {
         const format: FormatInterface = this.getFormat(type);
         const { timestampFormat, textFormat, typeFormat, namespaceFormat } = format;
         const formattedText = this.createLogMessage(type, message, format);
@@ -68,29 +76,36 @@ export class LemonLog implements LogInterface {
             console.log(formattedText);
             this.eventEmitter.emit('data', this.namespace, type, message);
         } else {
-            if (type === 'ERROR') {
+            // isBrowser
+            if (type === LogType.ERROR) {
                 console.error(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
             } else {
                 console.log(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
             }
         }
 
-        if (this.options.shouldSave) {
-            const defaultFormat: FormatInterface = {
-                timestampFormat: '',
-                typeFormat: '',
-                namespaceFormat: '',
-                textFormat: ': '
-            };
-            const unformattedText = this.createLogMessage(type, message, defaultFormat);
-            // TODO: add request
-            console.log(unformattedText)
+        const shouldSaveLog = this.options.shouldSave && !this.options.endpoint;
+        if (shouldSaveLog) {
+            this.sendLogMessage(type, message);
         }
         return;
     }
 
-    private getFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
+    private sendLogMessage(type: LogType, message: string) {
+        const { endpoint } = this.options;
+        const defaultFormat: FormatInterface = {
+            timestampFormat: '',
+            typeFormat: '',
+            namespaceFormat: '',
+            textFormat: ': '
+        };
+        const unformattedText = this.createLogMessage(type, message, defaultFormat);
+        // TODO: add request
+        // http.post(endpoint, ...);
+        // console.log(endpoint, unformattedText)
+    }
 
+    private getFormat(type: LogType): FormatInterface {
         if (isNode) {
             return this.getNodeFormat(type);
         }
@@ -98,7 +113,7 @@ export class LemonLog implements LogInterface {
         return this.getBrowserFormat(type);
     }
 
-    private getNodeFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
+    private getNodeFormat(type: LogType): FormatInterface {
         const defaultColor = this.colorService.getColorAsType();
         const typeColor = this.colorService.getColorAsType(type);
         const greyColor = this.colorService.getColorByName('Grey');
@@ -111,7 +126,7 @@ export class LemonLog implements LogInterface {
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
-    private getBrowserFormat(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR'): FormatInterface {
+    private getBrowserFormat(type: LogType): FormatInterface {
         const defaultColor = this.colorService.getColorAsType();
         const typeColor = this.colorService.getColorAsType(type);
         const greyColor = this.colorService.getColorByName('Grey');
@@ -124,7 +139,8 @@ export class LemonLog implements LogInterface {
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
-    private createLogMessage(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR', text: string, format: FormatInterface) {
+    private createLogMessage(type: LogType, text: string, format: FormatInterface) {
+        const typeBlank = type === LogType.INFO || type === LogType.WARN ? ' ' : '';
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
         if (isBrowser) {
@@ -134,17 +150,16 @@ export class LemonLog implements LogInterface {
             textFormat = ': %c';
         }
 
-        let result = '';
-        result += '' + this.createTimestamp(new Date()) + ' ';
-        result = timestampFormat + result;
-        result += typeFormat + '[' + type + ']' + (type === 'INFO' || type === 'WARN' ? ' ' : '') + ' ';
-        result += namespaceFormat + this.namespace;
-        result += textFormat + text;
+        let result = `${timestampFormat}${this.createTimestamp(new Date())} `;
+        result += `${typeFormat}[${type}]${typeBlank} `;
+        result += `${namespaceFormat}${this.namespace}`;
+        result += `${textFormat}${text}`;
         return result;
     }
 
-    //! timestamp like 2016-12-08 13:30:44
+    //! timestamp like 2016-12-08 13:30:44 @lemon-engine
     private createTimestamp(date: Date) {
+        const zeroOrNull = (text: number) => text < 10 ? '0' : '';
         const dt = date || new Date();
         const [year, month, day, hours, minutes, seconds] = [
             dt.getFullYear(),
@@ -154,24 +169,9 @@ export class LemonLog implements LogInterface {
             dt.getMinutes(),
             dt.getSeconds(),
         ];
-        return (
-            (year < 10 ? '0' : '') +
-            year +
-            '-' +
-            (month < 10 ? '0' : '') +
-            month +
-            '-' +
-            (day < 10 ? '0' : '') +
-            day +
-            ' ' +
-            (hours < 10 ? '0' : '') +
-            hours +
-            ':' +
-            (minutes < 10 ? '0' : '') +
-            minutes +
-            ':' +
-            (seconds < 10 ? '0' : '') +
-            seconds
-        );
+
+        const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`;
+        const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`;
+        return `${dateText} ${hoursText}`
     }
 }

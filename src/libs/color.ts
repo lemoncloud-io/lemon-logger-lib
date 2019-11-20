@@ -1,4 +1,5 @@
 import { isBrowser } from './detectPlatform';
+import { LogType } from './logger';
 
 export const NODE_COLORS = {
     Black: 0,
@@ -37,7 +38,7 @@ export class ColorService {
         };
     }
 
-    public getColorAsType(type: 'DEBUG' | 'WARN' | 'INFO' | 'ERROR' | 'DEFAULT' = 'DEFAULT'): string {
+    public getColorAsType(type: LogType = LogType.DEBUG): string {
         return this.logColors[type];
     }
 
