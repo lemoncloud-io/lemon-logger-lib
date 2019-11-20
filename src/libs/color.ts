@@ -10,6 +10,7 @@ export const NODE_COLORS = {
     Magenta: 5,
     Cyan: 6,
     Grey: 7,
+    White: 9,
 };
 
 export const BROWSER_COLORS = {
@@ -21,6 +22,7 @@ export const BROWSER_COLORS = {
     Magenta: 'Orchid',
     Cyan: 'SkyBlue',
     Grey: 'DimGrey',
+    White: 'White',
 };
 
 export class ColorService {
@@ -30,7 +32,7 @@ export class ColorService {
     constructor() {
         this.colorSet = this.getColorSet();
         this.logColors = {
-            DEBUG: this.colorSet.Black,
+            DEBUG: this.colorSet.Blue,
             INFO: this.colorSet.Green,
             WARN: this.colorSet.Yellow,
             ERROR: this.colorSet.Red,
@@ -38,7 +40,7 @@ export class ColorService {
         };
     }
 
-    public getColorAsType(type: LogType = LogType.DEBUG): string {
+    public getColorAsType(type: LogType): string {
         return this.logColors[type];
     }
 

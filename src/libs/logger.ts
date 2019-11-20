@@ -114,33 +114,33 @@ export class LemonLog implements LogInterface {
     }
 
     private getNodeFormat(type: LogType): FormatInterface {
-        const defaultColor = this.colorService.getColorAsType();
+        const whiteColor = this.colorService.getColorByName('White');
         const typeColor = this.colorService.getColorAsType(type);
         const greyColor = this.colorService.getColorByName('Grey');
 
         const timestampFormat = '\u001b[3' + greyColor + 'm';
         const typeFormat = '\u001b[3' + typeColor + ';22m';
+        const namespaceFormat = '\u001b[3' + whiteColor + ';1m';
         const textFormat = '\u001b[0m: ';
-        const namespaceFormat = '\u001b[3' + defaultColor + ';1m';
 
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
     private getBrowserFormat(type: LogType): FormatInterface {
-        const defaultColor = this.colorService.getColorAsType();
+        const whiteColor = this.colorService.getColorByName('White');
         const typeColor = this.colorService.getColorAsType(type);
         const greyColor = this.colorService.getColorByName('Grey');
 
         const timestampFormat = 'color:' + greyColor;
         const typeFormat = 'color:' + typeColor;
+        const namespaceFormat = 'color:' + whiteColor + '; font-weight: bold';
         const textFormat = ': ';
-        const namespaceFormat = 'color:' + defaultColor + '; font-weight: bold';
 
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
     private createLogMessage(type: LogType, text: string, format: FormatInterface) {
-        const typeBlank = type === LogType.INFO || type === LogType.WARN ? ' ' : '';
+        const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
         if (isBrowser) {
@@ -150,11 +150,11 @@ export class LemonLog implements LogInterface {
             textFormat = ': %c';
         }
 
-        let result = `${timestampFormat}${this.createTimestamp(new Date())} `;
-        result += `${typeFormat}[${type}]${typeBlank} `;
-        result += `${namespaceFormat}${this.namespace}`;
-        result += `${textFormat}${text}`;
-        return result;
+        const timestampLog = `${timestampFormat}${this.createTimestamp(new Date())}`;
+        const typeLog = `${typeFormat}[${type}]${typeBlank} `;
+        const namespaceLog = `${namespaceFormat}${this.namespace}`;
+        const textLog = `${textFormat}${text}`;
+        return `${timestampLog} ${typeLog}${namespaceLog}${textLog}`;
     }
 
     //! timestamp like 2016-12-08 13:30:44 @lemon-engine
