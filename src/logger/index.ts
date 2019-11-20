@@ -157,8 +157,8 @@ export class Logger implements LogInterface {
         }
 
         const { showTimestamp, showLogType } = this.options;
-        const timestampLog = showTimestamp ? `${timestampFormat}${this.createTimestamp(new Date())} ` : '';
-        const typeLog = showLogType ? `${typeFormat}[${type}]${typeBlank} ` : '';
+        const timestampLog = showTimestamp ? `${timestampFormat}${this.createTimestamp(new Date())} ` : `${timestampFormat}`;
+        const typeLog = showLogType ? `${typeFormat}[${type}]${typeBlank} ` : `${typeFormat}`;
         const namespaceLog = `${namespaceFormat}${this.namespace}`;
         const textLog = `${textFormat}${text}`;
         return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;

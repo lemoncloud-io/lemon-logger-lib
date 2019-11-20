@@ -6,11 +6,25 @@
 <script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
 <script type="text/javascript">
     var logger = new LemonLibs.Logger('TEST');
+    var logger2 = new LemonLibs.Logger('LEMON', { showTimestamp: false });
+    var logger3 = new LemonLibs.Logger('LEMON', { showTimestamp: false, showLogType: false });
     var utils = new LemonLibs.UtilsService();
     logger.debug(`This is a log message, isBrowser: `, utils.isBrowser());
     logger.info(`This is a log message `, 'isNode: ', utils.isBrowser());
     logger.warn(`This is a log message `, `getColorByType: ${utils.getColorAsType('WARN')}`);
     logger.error(`This is a log message`, `getColorByType: ${utils.getColorAsType('ERROR')}`);
+
+    logger2.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger2.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger2.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger2.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger2.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
+
+    logger3.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger3.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger3.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 </script>
 </body>
 </html>
