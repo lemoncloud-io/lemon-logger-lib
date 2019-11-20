@@ -1,5 +1,5 @@
 import { isBrowser } from './detectPlatform';
-import { LogType } from './logger';
+import { LogType } from '../constant/logger.constant';
 
 export const NODE_COLORS = {
     Black: 0,
