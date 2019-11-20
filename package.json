@@ -2,13 +2,14 @@
     "name": "lemon-logger-lib",
     "version": "1.0.0",
     "description": "lemon logger library",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
-        "example": "node example/example.js",
-        "build": "npm run build-ts",
-        "build-ts": "tsc",
-        "watch-ts": "tsc -w",
+        "start": "tsc -w",
+        "prebuild": "rm -rf dist/ && rm -rf lib/",
+        "build": "npm run build:lib && npm run build:dist",
+        "build:lib": "tsc -d",
+        "build:dist": "webpack --progress --profile --bail --optimize-minimize",
         "dev:test": "jest --config=jest.config.json --watchAll",
         "test": "jest --config=jest.config.json",
         "doc": "npm run doc:html && open dist/docs/index.html",
@@ -38,7 +39,9 @@
         ]
     },
     "files": [
-        "dist/**/*"
+        "lib/",
+        "dist/",
+        "example/"
     ],
     "engines": {
         "node": ">=8.10.0"
@@ -66,6 +69,7 @@
         "@types/winston": "^2.4.4",
         "@typescript-eslint/eslint-plugin": "^1.7.0",
         "@typescript-eslint/parser": "^1.7.0",
+        "awesome-typescript-loader": "^5.2.1",
         "codecov": "^3.4.0",
         "concurrently": "^4.1.0",
         "eslint": "^5.16.0",
@@ -77,6 +81,8 @@
         "lint-staged": "^8.1.6",
         "prettier": "^1.17.0",
         "ts-jest": "^24.0.2",
-        "typedoc": "^0.14.2"
+        "typedoc": "^0.14.2",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10"
     }
 }

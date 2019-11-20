@@ -1,13 +1,34 @@
 import { format } from 'util';
 import { EventEmitter } from 'events';
-import { LogInterface, LogType, FormatInterface } from '../constant/logger.constant';
+import { UtilsService } from '../utils';
 
-import { isNode, isBrowser } from './detectPlatform';
-import { ColorService } from './color';
+export enum LogType {
+    DEBUG = 'DEBUG',
+    WARN = 'WARN',
+    INFO = 'INFO',
+    ERROR = 'ERROR',
+}
 
-export class LemonLog implements LogInterface {
+export interface LogInterface {
+    debug(message: string, ...extraParams: any[]): void;
+    warn(message: string, ...extraParams: any[]): void;
+    info(message: string, ...extraParams: any[]): void;
+    error(message: string, ...extraParams: any[]): void;
+}
+
+export interface FormatInterface {
+    timestampFormat: string;
+    typeFormat: string;
+    textFormat: string;
+    namespaceFormat: string;
+}
+
+export class Logger implements LogInterface {
+
     private eventEmitter: EventEmitter;
-    private colorService: ColorService;
+    private utilsService: UtilsService;
+    private isNode: boolean;
+    private isBrowser: boolean;
     private namespace: string;
     private options = {
         showTimestamp: true,
@@ -19,9 +40,12 @@ export class LemonLog implements LogInterface {
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
         this.eventEmitter = new EventEmitter();
-        this.colorService = new ColorService();
+        this.utilsService = new UtilsService();
         this.namespace = namespace;
         this.options = { ...this.options, ...options };
+
+        this.isNode = this.utilsService.isNode();
+        this.isBrowser = this.utilsService.isBrowser();
     }
 
     public log(message: string, ...extraParams: any[]) {
@@ -54,7 +78,7 @@ export class LemonLog implements LogInterface {
         const { timestampFormat, textFormat, typeFormat, namespaceFormat } = format;
         const formattedText = this.createLogMessage(type, message, format);
 
-        if (isNode) {
+        if (this.isNode) {
             console.log(formattedText);
             this.eventEmitter.emit('data', this.namespace, type, message);
         } else {
@@ -88,7 +112,7 @@ export class LemonLog implements LogInterface {
     }
 
     private getFormat(type: LogType): FormatInterface {
-        if (isNode) {
+        if (this.isNode) {
             return this.getNodeFormat(type);
         }
         // isBrowser
@@ -96,9 +120,9 @@ export class LemonLog implements LogInterface {
     }
 
     private getNodeFormat(type: LogType): FormatInterface {
-        const whiteColor = this.colorService.getColorByName('White');
-        const typeColor = this.colorService.getColorAsType(type);
-        const greyColor = this.colorService.getColorByName('Grey');
+        const whiteColor = this.utilsService.getColorByName('White');
+        const typeColor = this.utilsService.getColorAsType(type);
+        const greyColor = this.utilsService.getColorByName('Grey');
 
         const timestampFormat = '\u001b[3' + greyColor + 'm';
         const typeFormat = '\u001b[3' + typeColor + ';22m';
@@ -109,13 +133,13 @@ export class LemonLog implements LogInterface {
     }
 
     private getBrowserFormat(type: LogType): FormatInterface {
-        const whiteColor = this.colorService.getColorByName('White');
-        const typeColor = this.colorService.getColorAsType(type);
-        const greyColor = this.colorService.getColorByName('Grey');
+        const blackColor = this.utilsService.getColorByName('Black');
+        const typeColor = this.utilsService.getColorAsType(type);
+        const greyColor = this.utilsService.getColorByName('Grey');
 
         const timestampFormat = 'color:' + greyColor;
         const typeFormat = 'color:' + typeColor;
-        const namespaceFormat = 'color:' + whiteColor + '; font-weight: bold';
+        const namespaceFormat = 'color:' + blackColor + '; font-weight: bold';
         const textFormat = ': ';
 
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
@@ -125,7 +149,7 @@ export class LemonLog implements LogInterface {
         const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
-        if (isBrowser) {
+        if (this.isBrowser) {
             timestampFormat = '%c';
             typeFormat = '%c';
             namespaceFormat = '%c';

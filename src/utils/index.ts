@@ -1,5 +1,4 @@
-import { isBrowser } from './detectPlatform';
-import { LogType } from '../constant/logger.constant';
+import { LogType } from '../logger';
 
 export const NODE_COLORS = {
     Black: 0,
@@ -25,7 +24,7 @@ export const BROWSER_COLORS = {
     White: 'White',
 };
 
-export class ColorService {
+export class UtilsService {
     private colorSet: any;
     private logColors: any;
 
@@ -48,7 +47,15 @@ export class ColorService {
         return this.colorSet[name];
     }
 
+    public isBrowser() {
+        return typeof window !== 'undefined' && typeof window.document !== 'undefined';
+    }
+
+    public isNode() {
+      return typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+    }
+
     private getColorSet() {
-        return isBrowser ? BROWSER_COLORS : NODE_COLORS;
+        return this.isBrowser() ? BROWSER_COLORS : NODE_COLORS;
     }
 }

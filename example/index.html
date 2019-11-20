@@ -3,13 +3,14 @@
     <meta charset="utf-8">
 </head>
 <body>
-<script type="text/javascript" src="../dist/libs/logger.js" charset="utf-8"></script>
+<script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var logger  = new LemonLog('utils');
-    logger.debug(`This is a log message`);
-    logger.info(`This is a log message`);
-    logger.warn(`This is a log message`);
-    logger.error(`This is a log message`);
+    var logger = new LemonLibs.Logger('TEST');
+    var utils = new LemonLibs.UtilsService();
+    logger.debug(`This is a log message, isBrowser: `, utils.isBrowser());
+    logger.info(`This is a log message `, 'isNode: ', utils.isBrowser());
+    logger.warn(`This is a log message `, `getColorByType: ${utils.getColorAsType('WARN')}`);
+    logger.error(`This is a log message`, `getColorByType: ${utils.getColorAsType('ERROR')}`);
 </script>
 </body>
 </html>

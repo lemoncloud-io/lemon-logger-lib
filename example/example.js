@@ -1,10 +1,14 @@
 'use strict';
 
-const { LemonLog } = require('../dist');
-const logger = new LemonLog('TEST');
-const logger2 = new LemonLog('LEMON', { showTimestamp: false });
-const logger3 = new LemonLog('LEMON', { showTimestamp: false, showLogType: false });
+const { Logger, UtilsService } = require('../lib');
+const logger = new Logger('TEST');
+const logger2 = new Logger('LEMON', { showTimestamp: false });
+const logger3 = new Logger('LEMON', { showTimestamp: false, showLogType: false });
+const utils = new UtilsService();
 
+logger.log('this is log', 'isNode: ', utils.isNode());
+logger.warn('this is log', 'isBrowser: ', utils.isBrowser());
+logger.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
 logger.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
 logger.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
 logger.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
