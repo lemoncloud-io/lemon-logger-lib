@@ -76,6 +76,14 @@ export class Logger implements LogInterface {
         this.writeLog(LogType.ERROR, formattedMessage);
     }
 
+    public setOptions(options: any = {}) {
+        this.options = { ...this.options, ...options };
+        const shouldResetHttpClient = options.httpHost || options.httpMethod || options.httpPath;
+        if (shouldResetHttpClient) {
+            this.setHttpClient();
+        }
+    }
+
     private writeLog(type: LogType, message: string) {
         const shouldSendLog = this.options.shouldSend && this.options.httpHost;
         if (shouldSendLog) {

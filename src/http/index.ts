@@ -6,12 +6,12 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 
 export class HttpService {
 
+    public logMessageSubject$: Subject<string>; // used by Logger
+
+    private logMessage$: Observable<string>;
     private axiosInstance: AxiosInstance;
     private httpMethod: Method;
     private httpPath: string;
-
-    public logMessageSubject$: Subject<string>;
-    private logMessage$: Observable<string>;
 
     constructor(host: string, method: any = 'GET', path: string = '') {
         // set http options for axios
@@ -34,7 +34,7 @@ export class HttpService {
         this.logMessage$
             .pipe(mergeMap((message: string) => this.sendLog$(message), 1))
             .subscribe(
-                data => console.log(data),
+                (res: any) => console.log(`return: ${res.data.message}`),
                 err => console.error(err),
                 () => console.log('DONE')
             );
@@ -46,7 +46,6 @@ export class HttpService {
             url: this.httpPath,
             data: { message }
         };
-
         return fromPromise(this.doRequest(spec)).pipe(retry(3));
     }
 
