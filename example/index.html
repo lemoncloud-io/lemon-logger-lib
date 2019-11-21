@@ -4,6 +4,7 @@
 </head>
 <body>
 <script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
+<script type="text/javascript" src="https://unpkg.com/rxjs@6.5.3/bundles/rxjs.umd.min.js"></script>
 <script type="text/javascript">
     var logger = new LemonLib.Logger('TEST');
     var logger2 = new LemonLib.Logger('LEMON2', { showTimestamp: false });
@@ -27,7 +28,7 @@
     logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
     var logger4 = new LemonLib.Logger('LEMON4',  {
-        shouldSend: true,
+        shouldSend: false,
         httpHost: 'http://localhost:8333',
         httpMethod: 'GET',
         httpPath: '/mock/main-items',
@@ -42,6 +43,25 @@
         logger4.error('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
         logger4.warn('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
     }
+
+    var logger5 = new LemonLib.Logger('LEMON5',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'GET',
+        httpPath: '/mock/main-items',
+    });
+
+    logger5.log('log 1');
+    logger5.debug('log 2');
+    logger5.info('log 3');
+
+    logger5.log('log 4');
+    logger5.debug('log 5');
+    logger5.info('log 6');
+
+    logger5.log('log 7');
+    logger5.debug('log 8');
+    logger5.info('log 9');
 </script>
 </body>
 </html>

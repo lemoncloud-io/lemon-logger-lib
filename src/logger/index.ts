@@ -26,6 +26,7 @@ export class Logger implements LogInterface {
 
     private httpClient: HttpService;
     private utils: UtilsService;
+
     private isNode: boolean;
     private isBrowser: boolean;
     private namespace: string;
@@ -37,7 +38,6 @@ export class Logger implements LogInterface {
         httpHost: '',
         httpMethod: '',
         httpPath: '',
-        // TODO: add more options
     };
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
@@ -93,7 +93,6 @@ export class Logger implements LogInterface {
         return;
     }
 
-    // TODO: add request
     private sendLogMessage(type: LogType, message: string) {
         const defaultFormat: FormatInterface = {
             timestampFormat: '',
@@ -102,8 +101,7 @@ export class Logger implements LogInterface {
             textFormat: ': '
         };
         const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
-        this.httpClient.sendLog(unformattedText).then(res => console.log('res', res))
-            .catch(err => console.log('err', err));
+        this.httpClient.logMessageSubject$.next(unformattedText);
     }
 
     private logOnBrowser(type: LogType, message: string, format: FormatInterface) {
