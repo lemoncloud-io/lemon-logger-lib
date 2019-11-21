@@ -1,5 +1,3 @@
-import { format } from 'util';
-import { EventEmitter } from 'events';
 import { UtilsService } from '../utils';
 
 export enum LogType {
@@ -25,7 +23,6 @@ export interface FormatInterface {
 
 export class Logger implements LogInterface {
 
-    private eventEmitter: EventEmitter;
     private utils: UtilsService;
     private isNode: boolean;
     private isBrowser: boolean;
@@ -39,7 +36,6 @@ export class Logger implements LogInterface {
     };
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
-        this.eventEmitter = new EventEmitter();
         this.utils = new UtilsService();
         this.namespace = namespace;
         this.options = { ...this.options, ...options };
@@ -49,50 +45,51 @@ export class Logger implements LogInterface {
     }
 
     public log(message: string, ...extraParams: any[]) {
-        const formattedMessage = format(message, ...extraParams);
+        const formattedMessage = this.utils.formatMessage(message, extraParams);
         this.writeLog(LogType.DEBUG, formattedMessage);
     }
 
     public debug(message: string, ...extraParams: any[]) {
-        const formattedMessage = format(message, ...extraParams);
+        const formattedMessage = this.utils.formatMessage(message, extraParams);
         this.writeLog(LogType.DEBUG, formattedMessage);
     }
 
     public warn(message: string, ...extraParams: any[]) {
-        const formattedMessage = format(message, ...extraParams);
+        const formattedMessage = this.utils.formatMessage(message, extraParams);
         this.writeLog(LogType.WARN, formattedMessage);
     }
 
     public info(message: string, ...extraParams: any[]) {
-        const formattedMessage = format(message, ...extraParams);
+        const formattedMessage = this.utils.formatMessage(message, extraParams);
         this.writeLog(LogType.INFO, formattedMessage);
     }
 
     public error(message: string, ...extraParams: any[]) {
-        const formattedMessage = format(message, ...extraParams);
+        const formattedMessage = this.utils.formatMessage(message, extraParams);
         this.writeLog(LogType.ERROR, formattedMessage);
     }
 
     private writeLog(type: LogType, message: string) {
+        const shouldSaveLog = this.options.shouldSave && this.options.endpoint;
+        if (shouldSaveLog) {
+            this.sendLogMessage(type, message);
+        }
+
         const format: FormatInterface = this.getFormat(type);
         const { timestampFormat, textFormat, typeFormat, namespaceFormat } = format;
         const formattedText = this.createLogMessage(type, message, format);
 
         if (this.isNode) {
             console.log(formattedText);
-            this.eventEmitter.emit('data', this.namespace, type, message);
-        } else {
-            // isBrowser
-            if (type === LogType.ERROR) {
-                console.error(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
-            } else {
-                console.log(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
-            }
+            return;
         }
-
-        const shouldSaveLog = this.options.shouldSave && this.options.endpoint;
-        if (shouldSaveLog) {
-            this.sendLogMessage(type, message);
+        // isBrowser
+        if (type === LogType.ERROR) {
+            console.error(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
+            return;
+        } else {
+            console.log(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
+            return;
         }
         return;
     }
@@ -108,7 +105,7 @@ export class Logger implements LogInterface {
         };
         const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
         // http.post(endpoint, ...);
-        console.log(endpoint, unformattedText);
+        // console.log(endpoint, unformattedText);
     }
 
     private getFormat(type: LogType): FormatInterface {

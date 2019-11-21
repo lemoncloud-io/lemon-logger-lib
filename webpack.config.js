@@ -4,7 +4,7 @@ module.exports = {
     mode: 'production',
     context: __dirname + '/src',
     entry: {
-        LemonLibs: './',
+        LemonLib: './',
     },
     output: {
         path: __dirname + '/dist',

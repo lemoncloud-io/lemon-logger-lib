@@ -27,9 +27,16 @@ logger3.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd
 logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
 logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
-const logger4 = new Logger('LEMON', {endpoint: 'https://www.abd.com' });
+const logger4 = new Logger('LEMON', { endpoint: 'https://www.abd.com' });
 logger4.log('this is on node');
 logger4.debug('this is on node', 'extra params: ', { abced: 'debug'}, 456534);
 logger4.info('this is on node', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
 logger4.warn('this is on node', 'extra params: ', { abced: 'warn'}, 324423);
 logger4.error('this is on node', 'extra params: ', { abced: 'error'}, 123123124);
+
+try {
+    const _ = JSON.parse('test');
+} catch (e) {
+    logger4.debug('this is on node', 'error params: ', e);
+    logger4.error('this is on node', 'error params: ', e);
+}

@@ -1,3 +1,4 @@
+import { format } from 'util';
 import { LogType } from '../logger';
 
 export const NODE_COLORS = {
@@ -39,6 +40,11 @@ export class UtilsService {
         };
     }
 
+    public formatMessage(message: string, params: any[]) {
+        const extraParams = this.checkErrorInstance(params);
+        return format(message, ...extraParams);
+    }
+
     public getColorAsType(type: LogType): string {
         return this.logColors[type];
     }
@@ -53,6 +59,21 @@ export class UtilsService {
 
     public isNode() {
       return typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+    }
+
+    private checkErrorInstance(params: any[]) {
+        if (this.isNode()) {
+            return params;
+        }
+        // isBrowser
+        // browser에서 error message만 출력하는 이슈 해결 위해
+        return params.map(param => {
+            if (param instanceof Error) {
+                return { error: param.message, stack: param.stack };
+            } else {
+                return param;
+            }
+        });
     }
 
     private getColorSet() {

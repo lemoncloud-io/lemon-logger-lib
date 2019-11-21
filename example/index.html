@@ -5,10 +5,10 @@
 <body>
 <script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var logger = new LemonLibs.Logger('TEST');
-    var logger2 = new LemonLibs.Logger('LEMON', { showTimestamp: false });
-    var logger3 = new LemonLibs.Logger('LEMON', { showTimestamp: false, showLogType: false });
-    var utils = new LemonLibs.UtilsService();
+    var logger = new LemonLib.Logger('TEST');
+    var logger2 = new LemonLib.Logger('LEMON2', { showTimestamp: false });
+    var logger3 = new LemonLib.Logger('LEMON3', { showTimestamp: false, showLogType: false });
+    var utils = new LemonLib.UtilsService();
     logger.debug(`This is a log message, isBrowser: `, utils.isBrowser());
     logger.info(`This is a log message `, 'isNode: ', utils.isBrowser());
     logger.warn(`This is a log message `, `getColorByType: ${utils.getColorAsType('WARN')}`);
@@ -26,7 +26,7 @@
     logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
     logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
-    var logger4 = new LemonLibs.Logger('LEMON', { endpoint: 'https://www.abd.com'});
+    var logger4 = new LemonLib.Logger('LEMON4', { endpoint: 'https://www.abd.com'});
     logger4.log('this is on browser');
     logger4.debug('this is on browser', 'extra params: ', { abced: 'debug'}, 456534);
     logger4.info('this is on browser', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
@@ -34,7 +34,8 @@
     try {
         var test = JSON.parse('test');
     } catch (e) {
-        logger4.error('this is on browser', 'error params: ', e);
+        logger4.error('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
+        logger4.warn('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
     }
 </script>
 </body>
