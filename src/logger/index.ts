@@ -26,7 +26,7 @@ export interface FormatInterface {
 export class Logger implements LogInterface {
 
     private eventEmitter: EventEmitter;
-    private utilsService: UtilsService;
+    private utils: UtilsService;
     private isNode: boolean;
     private isBrowser: boolean;
     private namespace: string;
@@ -40,12 +40,12 @@ export class Logger implements LogInterface {
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
         this.eventEmitter = new EventEmitter();
-        this.utilsService = new UtilsService();
+        this.utils = new UtilsService();
         this.namespace = namespace;
         this.options = { ...this.options, ...options };
 
-        this.isNode = this.utilsService.isNode();
-        this.isBrowser = this.utilsService.isBrowser();
+        this.isNode = this.utils.isNode();
+        this.isBrowser = this.utils.isBrowser();
     }
 
     public log(message: string, ...extraParams: any[]) {
@@ -90,7 +90,7 @@ export class Logger implements LogInterface {
             }
         }
 
-        const shouldSaveLog = this.options.shouldSave && !this.options.endpoint;
+        const shouldSaveLog = this.options.shouldSave && this.options.endpoint;
         if (shouldSaveLog) {
             this.sendLogMessage(type, message);
         }
@@ -106,9 +106,9 @@ export class Logger implements LogInterface {
             namespaceFormat: '',
             textFormat: ': '
         };
-        const unformattedText = this.createLogMessage(type, message, defaultFormat);
+        const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
         // http.post(endpoint, ...);
-        // console.log(endpoint, unformattedText)
+        console.log(endpoint, unformattedText);
     }
 
     private getFormat(type: LogType): FormatInterface {
@@ -120,9 +120,9 @@ export class Logger implements LogInterface {
     }
 
     private getNodeFormat(type: LogType): FormatInterface {
-        const whiteColor = this.utilsService.getColorByName('White');
-        const typeColor = this.utilsService.getColorAsType(type);
-        const greyColor = this.utilsService.getColorByName('Grey');
+        const whiteColor = this.utils.getColorByName('White');
+        const typeColor = this.utils.getColorAsType(type);
+        const greyColor = this.utils.getColorByName('Grey');
 
         const timestampFormat = '\u001b[3' + greyColor + 'm';
         const typeFormat = '\u001b[3' + typeColor + ';22m';
@@ -133,9 +133,9 @@ export class Logger implements LogInterface {
     }
 
     private getBrowserFormat(type: LogType): FormatInterface {
-        const blackColor = this.utilsService.getColorByName('Black');
-        const typeColor = this.utilsService.getColorAsType(type);
-        const greyColor = this.utilsService.getColorByName('Grey');
+        const blackColor = this.utils.getColorByName('Black');
+        const typeColor = this.utils.getColorAsType(type);
+        const greyColor = this.utils.getColorByName('Grey');
 
         const timestampFormat = 'color:' + greyColor;
         const typeFormat = 'color:' + typeColor;
@@ -145,20 +145,24 @@ export class Logger implements LogInterface {
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
-    private createLogMessage(type: LogType, text: string, format: FormatInterface) {
+    private createLogMessage(type: LogType, text: string, format: FormatInterface, shouldFormat: boolean = true) {
         const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
+        const { showTimestamp, showLogType } = this.options;
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
-        if (this.isBrowser) {
+        if (this.isBrowser && shouldFormat) {
             timestampFormat = '%c';
             typeFormat = '%c';
             namespaceFormat = '%c';
             textFormat = ': %c';
         }
 
-        const { showTimestamp, showLogType } = this.options;
-        const timestampLog = showTimestamp ? `${timestampFormat}${this.createTimestamp(new Date())} ` : `${timestampFormat}`;
-        const typeLog = showLogType ? `${typeFormat}[${type}]${typeBlank} ` : `${typeFormat}`;
+        const timestampLog = showTimestamp
+            ? `${timestampFormat}${this.createTimestamp(new Date())} `
+            : `${timestampFormat}`; // format 정해줘야 browser에서 포맷 안깨짐
+        const typeLog = showLogType
+            ? `${typeFormat}[${type}]${typeBlank} `
+            : `${typeFormat}`;
         const namespaceLog = `${namespaceFormat}${this.namespace}`;
         const textLog = `${textFormat}${text}`;
         return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;
@@ -177,8 +181,8 @@ export class Logger implements LogInterface {
             dt.getSeconds(),
         ];
 
-        const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`;
-        const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`;
+        const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`; // yyyy-mm-dd
+        const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`; //hh:mm:ss
         return `${dateText} ${hoursText}`
     }
 }
