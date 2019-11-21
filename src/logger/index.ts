@@ -1,4 +1,5 @@
 import { UtilsService } from '../utils';
+import { HttpService } from '../http';
 
 export enum LogType {
     DEBUG = 'DEBUG',
@@ -7,14 +8,14 @@ export enum LogType {
     ERROR = 'ERROR',
 }
 
-export interface LogInterface {
+interface LogInterface {
     debug(message: string, ...extraParams: any[]): void;
     warn(message: string, ...extraParams: any[]): void;
     info(message: string, ...extraParams: any[]): void;
     error(message: string, ...extraParams: any[]): void;
 }
 
-export interface FormatInterface {
+interface FormatInterface {
     timestampFormat: string;
     typeFormat: string;
     textFormat: string;
@@ -23,6 +24,7 @@ export interface FormatInterface {
 
 export class Logger implements LogInterface {
 
+    private httpClient: HttpService;
     private utils: UtilsService;
     private isNode: boolean;
     private isBrowser: boolean;
@@ -30,8 +32,11 @@ export class Logger implements LogInterface {
     private options = {
         showTimestamp: true,
         showLogType: true,
-        shouldSave: true,
-        endpoint: ''
+        // for request
+        shouldSend: false,
+        httpHost: '',
+        httpMethod: '',
+        httpPath: '',
         // TODO: add more options
     };
 
@@ -42,6 +47,8 @@ export class Logger implements LogInterface {
 
         this.isNode = this.utils.isNode();
         this.isBrowser = this.utils.isBrowser();
+
+        this.setHttpClient();
     }
 
     public log(message: string, ...extraParams: any[]) {
@@ -70,33 +77,24 @@ export class Logger implements LogInterface {
     }
 
     private writeLog(type: LogType, message: string) {
-        const shouldSaveLog = this.options.shouldSave && this.options.endpoint;
-        if (shouldSaveLog) {
+        const shouldSendLog = this.options.shouldSend && this.options.httpHost;
+        if (shouldSendLog) {
             this.sendLogMessage(type, message);
         }
 
         const format: FormatInterface = this.getFormat(type);
-        const { timestampFormat, textFormat, typeFormat, namespaceFormat } = format;
         const formattedText = this.createLogMessage(type, message, format);
-
         if (this.isNode) {
             console.log(formattedText);
             return;
         }
         // isBrowser
-        if (type === LogType.ERROR) {
-            console.error(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
-            return;
-        } else {
-            console.log(formattedText, timestampFormat, typeFormat, namespaceFormat, textFormat);
-            return;
-        }
+        this.logOnBrowser(type, formattedText, format);
         return;
     }
 
     // TODO: add request
     private sendLogMessage(type: LogType, message: string) {
-        const { endpoint } = this.options;
         const defaultFormat: FormatInterface = {
             timestampFormat: '',
             typeFormat: '',
@@ -104,8 +102,17 @@ export class Logger implements LogInterface {
             textFormat: ': '
         };
         const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
-        // http.post(endpoint, ...);
-        // console.log(endpoint, unformattedText);
+        this.httpClient.sendLog(unformattedText).then(res => console.log('res', res))
+            .catch(err => console.log('err', err));
+    }
+
+    private logOnBrowser(type: LogType, message: string, format: FormatInterface) {
+        const { timestampFormat, typeFormat, namespaceFormat, textFormat } = format;
+        if (type === LogType.ERROR) {
+            console.error(message, timestampFormat, typeFormat, namespaceFormat, textFormat);
+        } else {
+            console.log(message, timestampFormat, typeFormat, namespaceFormat, textFormat);
+        }
     }
 
     private getFormat(type: LogType): FormatInterface {
@@ -181,5 +188,13 @@ export class Logger implements LogInterface {
         const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`; // yyyy-mm-dd
         const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`; //hh:mm:ss
         return `${dateText} ${hoursText}`
+    }
+
+    private setHttpClient() {
+        const shouldSendLog = this.options.shouldSend && this.options.httpHost;
+        if (shouldSendLog) {
+            const { httpHost, httpMethod, httpPath } = this.options;
+            this.httpClient = new HttpService(httpHost, httpMethod, httpPath);
+        }
     }
 }

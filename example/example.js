@@ -27,7 +27,12 @@ logger3.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd
 logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
 logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
-const logger4 = new Logger('LEMON', { endpoint: 'https://www.abd.com' });
+const logger4 = new Logger('LEMON', {
+    shouldSend: true,
+    httpHost: 'http://localhost:8333',
+    httpMethod: 'GET',
+    httpPath: '/mock/main-items',
+});
 logger4.log('this is on node');
 logger4.debug('this is on node', 'extra params: ', { abced: 'debug'}, 456534);
 logger4.info('this is on node', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });

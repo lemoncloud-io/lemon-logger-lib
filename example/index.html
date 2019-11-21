@@ -26,7 +26,12 @@
     logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
     logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
-    var logger4 = new LemonLib.Logger('LEMON4', { endpoint: 'https://www.abd.com'});
+    var logger4 = new LemonLib.Logger('LEMON4',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'GET',
+        httpPath: '/mock/main-items',
+    });
     logger4.log('this is on browser');
     logger4.debug('this is on browser', 'extra params: ', { abced: 'debug'}, 456534);
     logger4.info('this is on browser', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });

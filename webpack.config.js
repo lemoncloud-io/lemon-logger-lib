@@ -1,4 +1,5 @@
 const { CheckerPlugin } = require('awesome-typescript-loader');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
     mode: 'production',
@@ -10,7 +11,7 @@ module.exports = {
         path: __dirname + '/dist',
         filename: 'lemon.libs.js',
         libraryTarget: 'umd',
-        library: ['[name]'], // LemonLibs
+        library: ['[name]'], // LemonLib
         umdNamedDefine: true,
     },
     resolve: {
@@ -25,5 +26,5 @@ module.exports = {
             },
         ],
     },
-    plugins: [new CheckerPlugin()],
+    plugins: [new CheckerPlugin(), new HardSourceWebpackPlugin()],
 };
