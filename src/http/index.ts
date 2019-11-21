@@ -6,12 +6,12 @@ import { fromPromise } from 'rxjs/internal-compatibility';
 
 export class HttpService {
 
-    public logMessageSubject$: Subject<string>; // used by Logger
-
-    private logMessage$: Observable<string>;
     private axiosInstance: AxiosInstance;
     private httpMethod: Method;
     private httpPath: string;
+
+    private logMessageSubject$: Subject<string>; // used by Logger
+    private logMessage$: Observable<string>;
 
     constructor(host: string, method: any = 'GET', path: string = '') {
         // set http options for axios
@@ -30,9 +30,13 @@ export class HttpService {
         this.subscribeLogMessage();
     }
 
+    public requestSendLog(message: string) {
+        this.logMessageSubject$.next(message);
+    }
+
     private subscribeLogMessage() {
         this.logMessage$
-            .pipe(mergeMap((message: string) => this.sendLog$(message), 1))
+            .pipe(mergeMap((message: string) => this.doRequest$({ message }), 1))
             .subscribe(
                 (res: any) => console.log(`return: ${res.data.message}`),
                 err => console.error(err),
@@ -40,16 +44,17 @@ export class HttpService {
             );
     }
 
-    private sendLog$(message: string) {
+    private doRequest$(data: any) { // data: { ... }
         const spec: AxiosRequestConfig = {
             method: this.httpMethod,
             url: this.httpPath,
-            data: { message }
+            data: data
         };
-        return fromPromise(this.doRequest(spec)).pipe(retry(3));
+        return fromPromise(this.request(spec))
+            .pipe(retry(3));
     }
 
-    private doRequest(spec: AxiosRequestConfig) {
+    private request(spec: AxiosRequestConfig) {
         return new Promise((resolve, reject) => {
             this.axiosInstance.request(spec)
                 .then((res: AxiosResponse) => resolve(this.resSerializer(res)))

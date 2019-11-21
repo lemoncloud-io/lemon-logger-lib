@@ -109,7 +109,7 @@ export class Logger implements LogInterface {
             textFormat: ': '
         };
         const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
-        this.httpClient.logMessageSubject$.next(unformattedText);
+        this.httpClient.requestSendLog(unformattedText);
     }
 
     private logOnBrowser(type: LogType, message: string, format: FormatInterface) {
