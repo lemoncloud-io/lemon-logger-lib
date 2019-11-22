@@ -29,7 +29,7 @@ try {
     logger3.error('this is on node7', 'error params: ', e);
 }
 
-const logger4 = new Logger('LEMON', {
+const logger4 = new Logger('LEMON5', {
     shouldSend: true,
     httpHost: 'http://localhost:8333',
     httpMethod: 'POST',
@@ -42,14 +42,14 @@ logger4.warn('this is on node4', 'extra params: ', { abced: 'warn'}, 324423);
 logger4.error('this is on nod5e', 'extra params: ', { abced: 'error'}, 123123124);
 
 logger4.setOptions({ shouldSend: false });
-logger4.log('should not be sended log 1');
-logger4.log('should not be sended log 2');
-logger4.log('should not be sended log 3');
-logger4.log('should not be sended log 4');
+logger4.warn('should not be sended log 1');
+logger4.warn('should not be sended log 2');
+logger4.warn('should not be sended log 3');
+logger4.warn('should not be sended log 4');
 
 logger4.setOptions({ shouldSend: true });
-logger4.log('sended log 1');
-logger4.log('sended log 2');
-logger4.log('sended log 3');
-logger4.log('sended log 4');
-logger4.log('sended log 5');
+logger4.info('sended log 1');
+logger4.info('sended log 2');
+logger4.info('sended log 3');
+logger4.info('sended log 4');
+logger4.info('sended log 5');

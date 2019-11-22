@@ -10,7 +10,7 @@ export class HttpService {
     private httpMethod: Method;
     private httpPath: string;
 
-    private logMessageSubject$: Subject<string>; // used by Logger
+    private logMessageSubject$: Subject<string>;
     private logMessage$: Observable<string>;
 
     constructor(host: string, method: any = 'GET', path: string = '') {
@@ -37,11 +37,7 @@ export class HttpService {
     private subscribeLogMessage() {
         this.logMessage$
             .pipe(mergeMap((message: string) => this.doRequest$({ message }), 1))
-            .subscribe(
-                (res: any) => console.log(`return: ${res.data.message}`),
-                err => console.error(err),
-                () => console.log('DONE')
-            );
+            .subscribe();
     }
 
     private doRequest$(data: any) { // data: { ... }
