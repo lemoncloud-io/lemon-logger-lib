@@ -26,6 +26,7 @@ export const BROWSER_COLORS = {
 };
 
 export class UtilsService {
+
     private colorSet: any;
     private logColors: any;
 

@@ -1,4 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { Subject } from 'rxjs/internal/Subject';
+import { Observable } from 'rxjs/internal/Observable';
+import { mergeMap, retry } from 'rxjs/operators';
+import { fromPromise } from 'rxjs/internal-compatibility';
 
 export class HttpService {
 
@@ -6,7 +10,11 @@ export class HttpService {
     private httpMethod: Method;
     private httpPath: string;
 
+    private logMessageSubject$: Subject<string>;
+    private logMessage$: Observable<string>;
+
     constructor(host: string, method: any = 'GET', path: string = '') {
+        // set http options for axios
         const AXIOS_CONFIG: AxiosRequestConfig = {
             baseURL: host,
             timeout: 10000,
@@ -15,19 +23,34 @@ export class HttpService {
         this.axiosInstance = axios.create(AXIOS_CONFIG);
         this.httpMethod = method;
         this.httpPath = path;
+
+        // for queue the requests
+        this.logMessageSubject$ = new Subject<string>();
+        this.logMessage$ = this.logMessageSubject$.asObservable();
+        this.subscribeLogMessage();
     }
 
-    public sendLog(message: string) {
+    public requestSendLog(message: string) {
+        this.logMessageSubject$.next(message);
+    }
+
+    private subscribeLogMessage() {
+        this.logMessage$
+            .pipe(mergeMap((message: string) => this.doRequest$({ message }), 1))
+            .subscribe();
+    }
+
+    private doRequest$(data: any) { // data: { ... }
         const spec: AxiosRequestConfig = {
             method: this.httpMethod,
             url: this.httpPath,
-            data: { message }
+            data: data
         };
-
-        return this.doRequest(spec);
+        return fromPromise(this.request(spec))
+            .pipe(retry(3));
     }
 
-    private doRequest(spec: AxiosRequestConfig) {
+    private request(spec: AxiosRequestConfig) {
         return new Promise((resolve, reject) => {
             this.axiosInstance.request(spec)
                 .then((res: AxiosResponse) => resolve(this.resSerializer(res)))
@@ -42,3 +65,4 @@ export class HttpService {
         };
     }
 }
+

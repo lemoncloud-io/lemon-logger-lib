@@ -6,20 +6,20 @@
 <script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
 <script type="text/javascript">
     var logger = new LemonLib.Logger('TEST');
-    var logger2 = new LemonLib.Logger('LEMON2', { showTimestamp: false });
-    var logger3 = new LemonLib.Logger('LEMON3', { showTimestamp: false, showLogType: false });
-    var utils = new LemonLib.UtilsService();
-    logger.debug(`This is a log message, isBrowser: `, utils.isBrowser());
-    logger.info(`This is a log message `, 'isNode: ', utils.isBrowser());
-    logger.warn(`This is a log message `, `getColorByType: ${utils.getColorAsType('WARN')}`);
-    logger.error(`This is a log message`, `getColorByType: ${utils.getColorAsType('ERROR')}`);
+    logger.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
+    var logger2 = new LemonLib.Logger('LEMON2', { showTimestamp: false });
     logger2.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
     logger2.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
     logger2.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
     logger2.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
     logger2.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
+    var logger3 = new LemonLib.Logger('LEMON3', { showTimestamp: false, showLogType: false });
     logger3.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
     logger3.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
     logger3.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
@@ -27,7 +27,7 @@
     logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
 
     var logger4 = new LemonLib.Logger('LEMON4',  {
-        shouldSend: true,
+        shouldSend: false,
         httpHost: 'http://localhost:8333',
         httpMethod: 'GET',
         httpPath: '/mock/main-items',
@@ -42,6 +42,32 @@
         logger4.error('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
         logger4.warn('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
     }
+
+    var logger5 = new LemonLib.Logger('LOGGER_5',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'POST',
+        httpPath: '/mock/log',
+    });
+    logger5.log('log 1');
+    logger5.log('log 2');
+    logger5.log('log 3');
+    logger5.log('log 4');
+    logger5.log('log 5');
+
+    logger5.setOptions({ shouldSend: false });
+    logger5.warn('should not 1');
+    logger5.warn('should not 2');
+    logger5.warn('should not 3');
+    logger5.warn('should not 4');
+    logger5.warn('should not 5');
+
+    logger5.setOptions({ shouldSend: true });
+    logger5.info('should send log 1');
+    logger5.info('should send log 2');
+    logger5.info('should send log 3');
+    logger5.info('should send log 4');
+    logger5.info('should send log 5');
 </script>
 </body>
 </html>

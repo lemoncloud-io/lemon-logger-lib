@@ -26,6 +26,7 @@ export class Logger implements LogInterface {
 
     private httpClient: HttpService;
     private utils: UtilsService;
+
     private isNode: boolean;
     private isBrowser: boolean;
     private namespace: string;
@@ -37,7 +38,7 @@ export class Logger implements LogInterface {
         httpHost: '',
         httpMethod: '',
         httpPath: '',
-        // TODO: add more options
+        // TODO: add socket options
     };
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
@@ -76,6 +77,22 @@ export class Logger implements LogInterface {
         this.writeLog(LogType.ERROR, formattedMessage);
     }
 
+    public setOptions(options: any = {}) {
+        this.options = { ...this.options, ...options };
+        const shouldResetHttpClient = options.httpHost || options.httpMethod || options.httpPath;
+        if (shouldResetHttpClient) {
+            this.setHttpClient();
+        }
+    }
+
+    private setHttpClient() {
+        const shouldSendLog = this.options.shouldSend && this.options.httpHost;
+        if (shouldSendLog) {
+            const { httpHost, httpMethod, httpPath } = this.options;
+            this.httpClient = new HttpService(httpHost, httpMethod, httpPath);
+        }
+    }
+
     private writeLog(type: LogType, message: string) {
         const shouldSendLog = this.options.shouldSend && this.options.httpHost;
         if (shouldSendLog) {
@@ -93,7 +110,6 @@ export class Logger implements LogInterface {
         return;
     }
 
-    // TODO: add request
     private sendLogMessage(type: LogType, message: string) {
         const defaultFormat: FormatInterface = {
             timestampFormat: '',
@@ -102,8 +118,30 @@ export class Logger implements LogInterface {
             textFormat: ': '
         };
         const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
-        this.httpClient.sendLog(unformattedText).then(res => console.log('res', res))
-            .catch(err => console.log('err', err));
+        this.httpClient.requestSendLog(unformattedText);
+    }
+
+    private createLogMessage(type: LogType, text: string, format: FormatInterface, shouldFormat: boolean = true) {
+        const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
+        const { showTimestamp, showLogType } = this.options;
+        let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
+
+        if (this.isBrowser && shouldFormat) {
+            timestampFormat = '%c';
+            typeFormat = '%c';
+            namespaceFormat = '%c';
+            textFormat = ': %c';
+        }
+
+        const timestampLog = showTimestamp
+            ? `${timestampFormat}${this.createTimestamp(new Date())} `
+            : `${timestampFormat}`; // format 정해줘야 browser에서 포맷 안깨짐
+        const typeLog = showLogType
+            ? `${typeFormat}[${type}]${typeBlank} `
+            : `${typeFormat}`;
+        const namespaceLog = `${namespaceFormat}${this.namespace}`;
+        const textLog = `${textFormat}${text}`;
+        return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;
     }
 
     private logOnBrowser(type: LogType, message: string, format: FormatInterface) {
@@ -149,29 +187,6 @@ export class Logger implements LogInterface {
         return { timestampFormat, typeFormat, textFormat, namespaceFormat };
     }
 
-    private createLogMessage(type: LogType, text: string, format: FormatInterface, shouldFormat: boolean = true) {
-        const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
-        const { showTimestamp, showLogType } = this.options;
-        let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
-
-        if (this.isBrowser && shouldFormat) {
-            timestampFormat = '%c';
-            typeFormat = '%c';
-            namespaceFormat = '%c';
-            textFormat = ': %c';
-        }
-
-        const timestampLog = showTimestamp
-            ? `${timestampFormat}${this.createTimestamp(new Date())} `
-            : `${timestampFormat}`; // format 정해줘야 browser에서 포맷 안깨짐
-        const typeLog = showLogType
-            ? `${typeFormat}[${type}]${typeBlank} `
-            : `${typeFormat}`;
-        const namespaceLog = `${namespaceFormat}${this.namespace}`;
-        const textLog = `${textFormat}${text}`;
-        return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;
-    }
-
     //! timestamp like 2016-12-08 13:30:44 @lemon-engine
     private createTimestamp(date: Date) {
         const zeroOrNull = (text: number) => text < 10 ? '0' : '';
@@ -188,13 +203,5 @@ export class Logger implements LogInterface {
         const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`; // yyyy-mm-dd
         const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`; //hh:mm:ss
         return `${dateText} ${hoursText}`
-    }
-
-    private setHttpClient() {
-        const shouldSendLog = this.options.shouldSend && this.options.httpHost;
-        if (shouldSendLog) {
-            const { httpHost, httpMethod, httpPath } = this.options;
-            this.httpClient = new HttpService(httpHost, httpMethod, httpPath);
-        }
     }
 }

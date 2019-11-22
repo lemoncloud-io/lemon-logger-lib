@@ -1,5 +1,4 @@
 const { CheckerPlugin } = require('awesome-typescript-loader');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
     mode: 'production',
@@ -26,5 +25,5 @@ module.exports = {
             },
         ],
     },
-    plugins: [new CheckerPlugin(), new HardSourceWebpackPlugin()],
+    plugins: [new CheckerPlugin()],
 };
