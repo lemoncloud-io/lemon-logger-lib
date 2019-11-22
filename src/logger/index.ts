@@ -38,6 +38,7 @@ export class Logger implements LogInterface {
         httpHost: '',
         httpMethod: '',
         httpPath: '',
+        // TODO: add socket options
     };
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
