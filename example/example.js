@@ -54,32 +54,34 @@ logger4.info('sended log 3');
 logger4.info('sended log 4');
 logger4.info('sended log 5');
 
-// const logger5 = new Logger('LEMON5', {
-//     shouldSend: true,
-//     httpHost: 'http://localhost:8333',
-//     httpMethod: 'POST',
-//     httpPath: '/mock/log',
-//     useSocket: true,
-//     socketHost: 'http://localhost:5555',
-//     socketEvent: 'LEMON5',
-// });
-// logger5.info('sended log 1 with socket');
-// logger5.info('sended log 2 with socket');
-// logger5.info('sended log 3 with socket');
-// logger5.info('sended log 4 with socket');
-// logger5.info('sended log 5 with socket');
-//
-// logger5.setOptions({ useSocket: false });
-// logger5.warn('nonono log 1 with socket');
-// logger5.warn('nonono log 2 with socket');
-// logger5.warn('nonono log 3 with socket');
-// logger5.warn('nonono log 4 with socket');
-//
-// setTimeout(() => {
-//     logger5.setOptions({ useSocket: true });
-//     logger5.info('1sended log 1 with socket');
-//     logger5.info('2sended log 2 with socket');
-//     logger5.info('3sended log 3 with socket');
-//     logger5.info('4sended log 4 with socket');
-//     logger5.info('5sended log 5 with socket');
-// }, 3000);
+const logger5 = new Logger('LEMON5', {
+    shouldSend: true,
+    httpHost: 'http://localhost:8333',
+    httpMethod: 'POST',
+    httpPath: '/mock/log',
+    useSocket: true,
+    socketHost: 'http://localhost:5555',
+    socketEvent: 'LEMON5',
+});
+logger5.info('sended log 1 with socket');
+logger5.info('sended log 2 with socket');
+logger5.info('sended log 3 with socket');
+logger5.info('sended log 4 with socket');
+logger5.info('sended log 5 with socket');
+
+logger5.setOptions({ useSocket: false });
+logger5.warn('nonono log 1 with socket');
+logger5.warn('nonono log 2 with socket');
+logger5.warn('nonono log 3 with socket');
+logger5.warn('nonono log 4 with socket');
+
+setTimeout(() => {
+    logger5.setOptions({ useSocket: true });
+    logger5.info('1sended log 1 with socket');
+    logger5.info('2sended log 2 with socket');
+    logger5.info('3sended log 3 with socket');
+    logger5.info('4sended log 4 with socket');
+    logger5.info('5sended log 5 with socket');
+    logger5.closeSocket();
+}, 3000);
+

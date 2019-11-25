@@ -93,13 +93,14 @@ export class Logger implements LogInterface {
 
         const shouldResetSocketClient = options.socketHost || options.socketEvent;
         if (shouldResetSocketClient) {
-            this.socketClient.close();
             this.setSocketClient();
         }
     }
 
     public closeSocket() {
-        this.socketClient.close();
+        if (this.options.useSocket) {
+            this.socketClient.close();
+        }
     }
 
     private setHttpClient() {
