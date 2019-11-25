@@ -12,7 +12,7 @@
         "build:dist": "webpack --progress --profile --bail --optimize-minimize",
         "dev:test": "jest --config=jest.config.json --watchAll",
         "test": "jest --config=jest.config.json",
-        "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,jsx,tsx}' --fix",
+        "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,jsx,tsx}' --fix",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
         "prepare": "npm run build",
         "prepublishOnly": "npm test && npm run lint && npm run format"

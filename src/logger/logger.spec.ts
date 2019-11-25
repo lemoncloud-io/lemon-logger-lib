@@ -1,10 +1,8 @@
 import SpyInstance = jest.SpyInstance;
 import { Logger, LogType, FormatInterface } from './index';
 import { UtilsService } from '../utils';
-import { SocketService } from '../socket';
 
 describe('default Logger', () => {
-
     let logger: Logger;
     let utils: UtilsService;
 
@@ -110,7 +108,6 @@ describe('default Logger', () => {
         const format: FormatInterface = logger['getFormat'](logType);
         logger['writeLog'](logType, message);
 
-
         expect(spyGetFormat).toHaveBeenCalledWith(logType);
         expect(spyCreateLogMessage).toHaveBeenCalledWith(logType, message, format);
     });
@@ -124,7 +121,7 @@ describe('default Logger', () => {
             timestampFormat: '',
             typeFormat: '',
             namespaceFormat: '',
-            textFormat: ': '
+            textFormat: ': ',
         };
         logger['getUnformattedLogMessage'](logType, message);
 
@@ -138,7 +135,7 @@ describe('default Logger', () => {
             timestampFormat: '',
             typeFormat: '',
             namespaceFormat: '',
-            textFormat: ': '
+            textFormat: ': ',
         };
         const logMessage = logger['createLogMessage'](logType, message, defaultFormat);
 
@@ -146,7 +143,7 @@ describe('default Logger', () => {
         expect(logMessage).toContain('LEMON');
         expect(logMessage).toContain(message);
 
-        const [date, hours, ...rest] = logMessage.split(' ');
+        const [date, hours, ..._] = logMessage.split(' ');
         const dateReg = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/gm;
         expect(dateReg.test(date)).toBeTruthy();
 
@@ -167,7 +164,7 @@ describe('default Logger', () => {
         const logType: LogType = LogType.DEBUG;
 
         const format: FormatInterface = logger['getNodeFormat'](logType);
-        const { timestampFormat, typeFormat, textFormat, namespaceFormat } = format
+        const { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
         expect(timestampFormat).toBeDefined();
         expect(typeFormat).toBeDefined();
@@ -188,5 +185,3 @@ describe('default Logger', () => {
         expect(hoursReg.test(hoursStr)).toBeTruthy();
     });
 });
-
-

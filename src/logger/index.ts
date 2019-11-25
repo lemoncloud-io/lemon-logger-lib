@@ -24,7 +24,6 @@ export interface FormatInterface {
 }
 
 export class Logger implements LogInterface {
-
     private httpClient: HttpService;
     private socketClient: SocketService;
     private utils: UtilsService;
@@ -158,13 +157,13 @@ export class Logger implements LogInterface {
             timestampFormat: '',
             typeFormat: '',
             namespaceFormat: '',
-            textFormat: ': '
+            textFormat: ': ',
         };
         return this.createLogMessage(type, message, defaultFormat, false);
     }
 
     private createLogMessage(type: LogType, text: string, format: FormatInterface, shouldFormat: boolean = true) {
-        const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
+        const typeBlank = type === LogType.INFO || type === LogType.WARN ? ' ' : '';
         const { showTimestamp, showLogType } = this.options;
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
@@ -178,9 +177,7 @@ export class Logger implements LogInterface {
         const timestampLog = showTimestamp
             ? `${timestampFormat}${this.createTimestamp(new Date())} `
             : `${timestampFormat}`; // format 정해줘야 browser에서 포맷 안깨짐
-        const typeLog = showLogType
-            ? `${typeFormat}[${type}]${typeBlank} `
-            : `${typeFormat}`;
+        const typeLog = showLogType ? `${typeFormat}[${type}]${typeBlank} ` : `${typeFormat}`;
         const namespaceLog = `${namespaceFormat}${this.namespace}`;
         const textLog = `${textFormat}${text}`;
         return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;
@@ -231,7 +228,7 @@ export class Logger implements LogInterface {
 
     //! timestamp like 2016-12-08 13:30:44 @lemon-engine
     private createTimestamp(date: Date) {
-        const zeroOrNull = (text: number) => text < 10 ? '0' : '';
+        const zeroOrNull = (text: number) => (text < 10 ? '0' : '');
         const dt = date || new Date();
         const [year, month, day, hours, minutes, seconds] = [
             dt.getFullYear(),
@@ -244,6 +241,6 @@ export class Logger implements LogInterface {
 
         const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`; // yyyy-mm-dd
         const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`; //hh:mm:ss
-        return `${dateText} ${hoursText}`
+        return `${dateText} ${hoursText}`;
     }
 }

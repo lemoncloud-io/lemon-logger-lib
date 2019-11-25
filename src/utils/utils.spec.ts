@@ -3,7 +3,6 @@ import { UtilsService, NODE_COLORS } from './index';
 import { LogType } from '../logger';
 
 describe('UtilsService', () => {
-
     let utils: UtilsService;
 
     beforeEach(() => {
@@ -68,5 +67,3 @@ describe('UtilsService', () => {
         expect(utils['checkErrorInstance'](testParams)).toEqual(testParams);
     });
 });
-
-

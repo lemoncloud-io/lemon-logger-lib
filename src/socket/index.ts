@@ -1,7 +1,6 @@
 import io from 'socket.io-client';
 
 export class SocketService {
-
     private serverURL: string = '';
     private eventName: string = 'LOGGER';
     private connected: boolean = false;
@@ -28,5 +27,4 @@ export class SocketService {
             this.connected = false;
         }
     }
-
 }
