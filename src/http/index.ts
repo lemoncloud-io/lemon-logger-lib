@@ -1,17 +1,11 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-import { Subject } from 'rxjs/internal/Subject';
-import { Observable } from 'rxjs/internal/Observable';
-import { mergeMap, retry } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 export class HttpService {
 
     private axiosInstance: AxiosInstance;
     private httpMethod: Method;
     private httpPath: string;
-
-    private logMessageSubject$: Subject<string>;
-    private logMessage$: Observable<string>;
+    private tasks: any;
 
     constructor(host: string, method: any = 'GET', path: string = '') {
         // set http options for axios
@@ -23,21 +17,26 @@ export class HttpService {
         this.axiosInstance = axios.create(AXIOS_CONFIG);
         this.httpMethod = method;
         this.httpPath = path;
-
         // for queue the requests
-        this.logMessageSubject$ = new Subject<string>();
-        this.logMessage$ = this.logMessageSubject$.asObservable();
-        this.subscribeLogMessage();
+        this.tasks = Promise.resolve();
     }
 
     public requestSendLog(message: string) {
-        this.logMessageSubject$.next(message);
+        this.runRequestQueue({ message });
     }
 
-    private subscribeLogMessage() {
-        this.logMessage$
-            .pipe(mergeMap((message: string) => this.doRequest$({ message }), 1))
-            .subscribe();
+    private runRequestQueue(bodyData: any = {}) {
+        return new Promise((resolve, reject) => {
+            this.tasks = this.tasks.then(async () => {
+                try {
+                    const response = await this.doRequest$(bodyData);
+                    resolve(response);
+                } catch (error) {
+                    reject(error);
+                }
+                return Promise.resolve();
+            });
+        });
     }
 
     private doRequest$(data: any) { // data: { ... }
@@ -46,8 +45,7 @@ export class HttpService {
             url: this.httpPath,
             data: data
         };
-        return fromPromise(this.request(spec))
-            .pipe(retry(3));
+        return this.request(spec);
     }
 
     private request(spec: AxiosRequestConfig) {

@@ -8,14 +8,14 @@ export enum LogType {
     ERROR = 'ERROR',
 }
 
-interface LogInterface {
+export interface LogInterface {
     debug(message: string, ...extraParams: any[]): void;
     warn(message: string, ...extraParams: any[]): void;
     info(message: string, ...extraParams: any[]): void;
     error(message: string, ...extraParams: any[]): void;
 }
 
-interface FormatInterface {
+export interface FormatInterface {
     timestampFormat: string;
     typeFormat: string;
     textFormat: string;
