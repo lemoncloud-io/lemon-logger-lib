@@ -45,6 +45,7 @@
     "homepage": "https://github.com/lemoncloud-io/lemon-logger-lib#readme",
     "dependencies": {
         "axios": "^0.19.0",
+        "socket.io-client": "^2.3.0",
         "source-map-support": "^0.5.12"
     },
     "devDependencies": {
@@ -52,6 +53,7 @@
         "@types/jest": "^24.0.12",
         "@types/morgan": "^1.7.35",
         "@types/node": "^12.12.9",
+        "@types/socket.io-client": "^1.4.32",
         "@types/supertest": "^2.0.7",
         "@typescript-eslint/eslint-plugin": "^1.7.0",
         "@typescript-eslint/parser": "^1.7.0",
@@ -64,8 +66,8 @@
         "jest": "^24.8.0",
         "prettier": "^1.17.0",
         "supertest": "^4.0.2",
-        "typescript": "^3.4.5",
         "ts-jest": "^24.0.2",
+        "typescript": "^3.4.5",
         "webpack": "^4.41.2",
         "webpack-cli": "^3.3.10"
     }
