@@ -1,6 +1,6 @@
 {
-    "name": "lemon-logger-lib",
-    "version": "0.0.0",
+    "name": "@lemoncloud/lemon-logger-lib",
+    "version": "1.0.0",
     "description": "lemon logger library",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
