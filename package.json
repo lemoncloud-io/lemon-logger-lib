@@ -24,11 +24,6 @@
         "type": "git",
         "url": "git+ssh://git@github.com/lemoncloud-io/lemon-logger-lib.git"
     },
-    "!private": "NOTE - private npm 저장소에 배포함!",
-    "private": false,
-    "publishConfig": {
-        "registry": "http://npm.lemoncloud.io:4873"
-    },
     "files": [
         "lib/**/*",
         "dist/**/*",
