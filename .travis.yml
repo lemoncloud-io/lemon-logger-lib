@@ -1,8 +1,13 @@
 language: node_js
+sudo: false
 node_js:
-  - 8.10.0
+  - 8
 install:
   - npm install
+cache:
+  bundler: true
+  directories:
+    - node_modules
 script:
   - npm run test
 after_success:
@@ -11,8 +16,8 @@ before_deploy:
   - npm run build
 deploy:
   provider: npm
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
   skip_cleanup: true
+  email: '$NPM_EMAIL'
+  api_key: '$NPM_TOKEN'
   on:
-    branch: develop
+    branch: feature/louis-deploy-travis
