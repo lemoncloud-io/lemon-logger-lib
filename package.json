@@ -30,6 +30,9 @@
         "example/**/*"
     ],
     "private": false,
+    "publishConfig": {
+        "access": "public"
+    },
     "engines": {
         "node": ">=8.10.0"
     },
