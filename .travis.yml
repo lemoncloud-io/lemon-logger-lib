@@ -11,8 +11,8 @@ before_deploy:
   - npm run build
 deploy:
   provider: npm
-  email: "$NPM_EMAIL"
-  api_key: "$NPM_TOKEN"
+  email: $NPM_EMAIL
+  api_key: $NPM_TOKEN
   skip_cleanup: true
   on:
     branch: develop
