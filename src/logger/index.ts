@@ -1,5 +1,6 @@
 import { UtilsService } from '../utils';
 import { HttpService } from '../http';
+import { SocketService } from '../socket';
 
 export enum LogType {
     DEBUG = 'DEBUG',
@@ -23,8 +24,8 @@ export interface FormatInterface {
 }
 
 export class Logger implements LogInterface {
-
     private httpClient: HttpService;
+    private socketClient: SocketService;
     private utils: UtilsService;
 
     private isNode: boolean;
@@ -38,7 +39,11 @@ export class Logger implements LogInterface {
         httpHost: '',
         httpMethod: '',
         httpPath: '',
-        // TODO: add socket options
+        // for socket
+        useSocket: false,
+        socketHost: '',
+        socketEvent: '',
+        // TODO: add more options
     };
 
     constructor(namespace: string = 'LEMON', options: any = {}) {
@@ -50,6 +55,7 @@ export class Logger implements LogInterface {
         this.isBrowser = this.utils.isBrowser();
 
         this.setHttpClient();
+        this.setSocketClient();
     }
 
     public log(message: string, ...extraParams: any[]) {
@@ -83,6 +89,17 @@ export class Logger implements LogInterface {
         if (shouldResetHttpClient) {
             this.setHttpClient();
         }
+
+        const shouldResetSocketClient = options.socketHost || options.socketEvent;
+        if (shouldResetSocketClient) {
+            this.setSocketClient();
+        }
+    }
+
+    public closeSocket() {
+        if (this.options.useSocket) {
+            this.socketClient.close();
+        }
     }
 
     private setHttpClient() {
@@ -93,10 +110,25 @@ export class Logger implements LogInterface {
         }
     }
 
+    private setSocketClient() {
+        const useSocket = this.options.useSocket && this.options.socketHost;
+        if (useSocket) {
+            const { socketHost, socketEvent } = this.options;
+            this.socketClient = new SocketService(socketHost, socketEvent);
+        }
+    }
+
     private writeLog(type: LogType, message: string) {
+        // check http
         const shouldSendLog = this.options.shouldSend && this.options.httpHost;
         if (shouldSendLog) {
             this.sendLogMessage(type, message);
+        }
+
+        // check socket
+        const useSocket = this.options.useSocket && this.options.socketHost;
+        if (useSocket) {
+            this.sendMessageToSocket(type, message);
         }
 
         const format: FormatInterface = this.getFormat(type);
@@ -111,18 +143,27 @@ export class Logger implements LogInterface {
     }
 
     private sendLogMessage(type: LogType, message: string) {
+        const unformattedText = this.getUnformattedLogMessage(type, message);
+        this.httpClient.requestSendLog(unformattedText);
+    }
+
+    private sendMessageToSocket(type: LogType, message: string) {
+        const unformattedText = this.getUnformattedLogMessage(type, message);
+        this.socketClient.sendMessage(unformattedText);
+    }
+
+    private getUnformattedLogMessage(type: LogType, message: string) {
         const defaultFormat: FormatInterface = {
             timestampFormat: '',
             typeFormat: '',
             namespaceFormat: '',
-            textFormat: ': '
+            textFormat: ': ',
         };
-        const unformattedText = this.createLogMessage(type, message, defaultFormat, false);
-        this.httpClient.requestSendLog(unformattedText);
+        return this.createLogMessage(type, message, defaultFormat, false);
     }
 
     private createLogMessage(type: LogType, text: string, format: FormatInterface, shouldFormat: boolean = true) {
-        const typeBlank = (type === LogType.INFO || type === LogType.WARN) ? ' ' : '';
+        const typeBlank = type === LogType.INFO || type === LogType.WARN ? ' ' : '';
         const { showTimestamp, showLogType } = this.options;
         let { timestampFormat, typeFormat, textFormat, namespaceFormat } = format;
 
@@ -136,9 +177,7 @@ export class Logger implements LogInterface {
         const timestampLog = showTimestamp
             ? `${timestampFormat}${this.createTimestamp(new Date())} `
             : `${timestampFormat}`; // format 정해줘야 browser에서 포맷 안깨짐
-        const typeLog = showLogType
-            ? `${typeFormat}[${type}]${typeBlank} `
-            : `${typeFormat}`;
+        const typeLog = showLogType ? `${typeFormat}[${type}]${typeBlank} ` : `${typeFormat}`;
         const namespaceLog = `${namespaceFormat}${this.namespace}`;
         const textLog = `${textFormat}${text}`;
         return `${timestampLog}${typeLog}${namespaceLog}${textLog}`;
@@ -189,7 +228,7 @@ export class Logger implements LogInterface {
 
     //! timestamp like 2016-12-08 13:30:44 @lemon-engine
     private createTimestamp(date: Date) {
-        const zeroOrNull = (text: number) => text < 10 ? '0' : '';
+        const zeroOrNull = (text: number) => (text < 10 ? '0' : '');
         const dt = date || new Date();
         const [year, month, day, hours, minutes, seconds] = [
             dt.getFullYear(),
@@ -202,6 +241,6 @@ export class Logger implements LogInterface {
 
         const dateText = `${zeroOrNull(year)}${year}-${zeroOrNull(month)}${month}-${zeroOrNull(day)}${day}`; // yyyy-mm-dd
         const hoursText = `${zeroOrNull(hours)}${hours}:${zeroOrNull(minutes)}${minutes}:${zeroOrNull(seconds)}${seconds}`; //hh:mm:ss
-        return `${dateText} ${hoursText}`
+        return `${dateText} ${hoursText}`;
     }
 }

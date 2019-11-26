@@ -26,7 +26,6 @@ export const BROWSER_COLORS = {
 };
 
 export class UtilsService {
-
     private colorSet: any;
     private logColors: any;
 
@@ -59,7 +58,7 @@ export class UtilsService {
     }
 
     public isNode() {
-      return typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+        return typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
     }
 
     private checkErrorInstance(params: any[]) {

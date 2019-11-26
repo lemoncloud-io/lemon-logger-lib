@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
 export class HttpService {
-
     private axiosInstance: AxiosInstance;
     private httpMethod: Method;
     private httpPath: string;
@@ -12,7 +11,7 @@ export class HttpService {
         const AXIOS_CONFIG: AxiosRequestConfig = {
             baseURL: host,
             timeout: 10000,
-            responseType: 'json'
+            responseType: 'json',
         };
         this.axiosInstance = axios.create(AXIOS_CONFIG);
         this.httpMethod = method;
@@ -43,7 +42,7 @@ export class HttpService {
         const spec: AxiosRequestConfig = {
             method: this.httpMethod,
             url: this.httpPath,
-            data: data
+            data: data,
         };
         return this.request(spec);
     }
@@ -63,4 +62,3 @@ export class HttpService {
         };
     }
 }
-

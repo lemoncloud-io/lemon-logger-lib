@@ -68,6 +68,38 @@
     logger5.info('should send log 3');
     logger5.info('should send log 4');
     logger5.info('should send log 5');
+
+    var logger6 = new LemonLib.Logger('LOGGER_6',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'POST',
+        httpPath: '/mock/log',
+        useSocket: true,
+        socketHost: 'http://localhost:5555',
+        socketEvent: 'LEMON5',
+    });
+
+    logger6.info('sended log 1 with socket');
+    logger6.info('sended log 2 with socket');
+    logger6.info('sended log 3 with socket');
+    logger6.info('sended log 4 with socket');
+    logger6.info('sended log 5 with socket');
+
+    logger6.setOptions({ useSocket: false });
+    logger6.warn('nonono log 1 with socket');
+    logger6.warn('nonono log 2 with socket');
+    logger6.warn('nonono log 3 with socket');
+    logger6.warn('nonono log 4 with socket');
+
+    setTimeout(() => {
+        logger6.setOptions({ useSocket: true });
+        logger6.info('1sended log 1 with socket');
+        logger6.info('2sended log 2 with socket');
+        logger6.info('3sended log 3 with socket');
+        logger6.info('4sended log 4 with socket');
+        logger6.info('5sended log 5 with socket');
+        logger6.closeSocket();
+    }, 3000);
 </script>
 </body>
 </html>
