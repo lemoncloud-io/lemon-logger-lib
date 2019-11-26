@@ -1,0 +1,105 @@
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<script type="text/javascript" src="../dist/lemon.libs.js" charset="utf-8"></script>
+<script type="text/javascript">
+    var logger = new LemonLib.Logger('TEST');
+    logger.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
+
+    var logger2 = new LemonLib.Logger('LEMON2', { showTimestamp: false });
+    logger2.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger2.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger2.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger2.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger2.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
+
+    var logger3 = new LemonLib.Logger('LEMON3', { showTimestamp: false, showLogType: false });
+    logger3.log('this is log', 'extra params: ', { abced: 'asdas'}, 456456);
+    logger3.debug('this is debug = log', 'extra params: ', { abced: 'debug'}, 456534);
+    logger3.info('this is info', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger3.warn('this is warn', 'extra params: ', { abced: 'warn'}, 324423);
+    logger3.error('this is error', 'extra params: ', { abced: 'error'}, 123123124);
+
+    var logger4 = new LemonLib.Logger('LEMON4',  {
+        shouldSend: false,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'GET',
+        httpPath: '/mock/main-items',
+    });
+    logger4.log('this is on browser');
+    logger4.debug('this is on browser', 'extra params: ', { abced: 'debug'}, 456534);
+    logger4.info('this is on browser', 'extra params: ', { abced: 'info'}, 45645, { asdasd: 'asdsd' });
+    logger4.warn('this is on browser', 'extra params: ', { abced: 'warn'}, 324423);
+    try {
+        var test = JSON.parse('test');
+    } catch (e) {
+        logger4.error('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
+        logger4.warn('this is on browser', 'error params: ', e, 'asdasdasd', {asdasdsa: 234234234234234234});
+    }
+
+    var logger5 = new LemonLib.Logger('LOGGER_5',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'POST',
+        httpPath: '/mock/log',
+    });
+    logger5.log('log 1');
+    logger5.log('log 2');
+    logger5.log('log 3');
+    logger5.log('log 4');
+    logger5.log('log 5');
+
+    logger5.setOptions({ shouldSend: false });
+    logger5.warn('should not 1');
+    logger5.warn('should not 2');
+    logger5.warn('should not 3');
+    logger5.warn('should not 4');
+    logger5.warn('should not 5');
+
+    logger5.setOptions({ shouldSend: true });
+    logger5.info('should send log 1');
+    logger5.info('should send log 2');
+    logger5.info('should send log 3');
+    logger5.info('should send log 4');
+    logger5.info('should send log 5');
+
+    var logger6 = new LemonLib.Logger('LOGGER_6',  {
+        shouldSend: true,
+        httpHost: 'http://localhost:8333',
+        httpMethod: 'POST',
+        httpPath: '/mock/log',
+        useSocket: true,
+        socketHost: 'http://localhost:5555',
+        socketEvent: 'LEMON5',
+    });
+
+    logger6.info('sended log 1 with socket');
+    logger6.info('sended log 2 with socket');
+    logger6.info('sended log 3 with socket');
+    logger6.info('sended log 4 with socket');
+    logger6.info('sended log 5 with socket');
+
+    logger6.setOptions({ useSocket: false });
+    logger6.warn('nonono log 1 with socket');
+    logger6.warn('nonono log 2 with socket');
+    logger6.warn('nonono log 3 with socket');
+    logger6.warn('nonono log 4 with socket');
+
+    setTimeout(() => {
+        logger6.setOptions({ useSocket: true });
+        logger6.info('1sended log 1 with socket');
+        logger6.info('2sended log 2 with socket');
+        logger6.info('3sended log 3 with socket');
+        logger6.info('4sended log 4 with socket');
+        logger6.info('5sended log 5 with socket');
+        logger6.closeSocket();
+    }, 3000);
+</script>
+</body>
+</html>
