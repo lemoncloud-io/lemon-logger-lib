@@ -7,7 +7,7 @@ TypeScript console logger for LemonCloud
 ## Install
 
 ```
-$ npm install lemon-logger-lib
+$ npm install @lemoncloud/lemon-logger-lib
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ $ npm install lemon-logger-lib
 ### default
 
 ```typescript
-import { Logger } from 'lemon-logger-lib';
+import { Logger } from '@lemoncloud/lemon-logger-lib';
 
 const logger = new Logger('LEMON');
 const logger2 = new Logger('LEMON2', { showTimestamp: false, showLogType: false });
